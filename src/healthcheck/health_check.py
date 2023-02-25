@@ -6,7 +6,7 @@ import pandas as pd
 from pandas import DataFrame
 
 
-class HealthCheck:
+class RobotHealthCheck:
     def __init__(self, data: dict[str, Any] | DataFrame) -> None:
         if isinstance(data, DataFrame):
             self.df = data

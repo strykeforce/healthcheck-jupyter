@@ -3,8 +3,8 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
-from healthcheck import HealthCheck
 from healthcheck import load_healthcheck
+from healthcheck import RobotHealthCheck
 
 
 @pytest.fixture
@@ -23,5 +23,5 @@ def data_pickle(fixtures_dir) -> Path:
 
 
 @pytest.fixture
-def health_check(data_pickle) -> HealthCheck:
+def health_check(data_pickle) -> RobotHealthCheck:
     return load_healthcheck(data_pickle)
