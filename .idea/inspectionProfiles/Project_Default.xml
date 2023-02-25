@@ -1,0 +1,59 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="Eslint" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="HtmlUnknownAttribute" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="myValues">
+        <value>
+          <list size="17">
+            <item index="0" class="java.lang.String" itemvalue="x-ref" />
+            <item index="1" class="java.lang.String" itemvalue="x-show" />
+            <item index="2" class="java.lang.String" itemvalue="x-transition:enter" />
+            <item index="3" class="java.lang.String" itemvalue="x-transition:enter-start" />
+            <item index="4" class="java.lang.String" itemvalue="x-transition:enter-end" />
+            <item index="5" class="java.lang.String" itemvalue="x-transition:leave" />
+            <item index="6" class="java.lang.String" itemvalue="x-transition:leave-start" />
+            <item index="7" class="java.lang.String" itemvalue="x-transition:leave-end" />
+            <item index="8" class="java.lang.String" itemvalue="x-on:click.outside" />
+            <item index="9" class="java.lang.String" itemvalue=":id" />
+            <item index="10" class="java.lang.String" itemvalue="x-on:keydown.escape.prevent.stop" />
+            <item index="11" class="java.lang.String" itemvalue="x-on:focusin.window" />
+            <item index="12" class="java.lang.String" itemvalue="x-id" />
+            <item index="13" class="java.lang.String" itemvalue="x-on:click" />
+            <item index="14" class="java.lang.String" itemvalue=":aria-expanded" />
+            <item index="15" class="java.lang.String" itemvalue=":aria-controls" />
+            <item index="16" class="java.lang.String" itemvalue="x-data" />
+          </list>
+        </value>
+      </option>
+      <option name="myCustomValuesEnabled" value="true" />
+    </inspection_tool>
+    <inspection_tool class="PyCompatibilityInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ourVersions">
+        <value>
+          <list size="2">
+            <item index="0" class="java.lang.String" itemvalue="3.10" />
+            <item index="1" class="java.lang.String" itemvalue="3.11" />
+          </list>
+        </value>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyPackageRequirementsInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredPackages">
+        <value>
+          <list size="1">
+            <item index="0" class="java.lang.String" itemvalue="six" />
+          </list>
+        </value>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyUnresolvedReferencesInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredIdentifiers">
+        <list>
+          <option value="website.blog.models.BlogPage.gallery_images" />
+        </list>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="Stylelint" enabled="true" level="ERROR" enabled_by_default="true" />
+  </profile>
+</component>
