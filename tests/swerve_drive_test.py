@@ -1,0 +1,17 @@
+from __future__ import annotations
+
+
+def test_df_copy_is_shallow(robot_health_check):
+    hc_df = robot_health_check.df
+    sd_df = robot_health_check.swerve_drive_health_check.df
+
+    assert hc_df.index is sd_df.index
+
+    assert hc_df.iloc[0, 3] == "DriveSubsystem"
+    assert sd_df.iloc[0, 3] == "DriveSubsystem"
+
+    expected = "RenamedSubsystem"
+    sd_df.iloc[0, 3] = expected
+
+    assert sd_df.iloc[0, 3] == expected
+    assert hc_df.iloc[0, 3] == expected

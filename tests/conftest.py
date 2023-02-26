@@ -23,5 +23,5 @@ def data_pickle(fixtures_dir) -> Path:
 
 
 @pytest.fixture
-def health_check(data_pickle) -> RobotHealthCheck:
+def robot_health_check(data_pickle) -> RobotHealthCheck:
     return load_healthcheck(data_pickle)
