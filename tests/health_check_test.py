@@ -10,7 +10,7 @@ from healthcheck.health_check import HealthCheck
 
 def test_save_none(robot_health_check):
     p = robot_health_check.save()
-    assert str(p) == "2023-02-18-1436.pkl.xz"
+    assert str(p) == "2023-02-28-1057.pkl.xz"
     df = pd.read_pickle(p, compression="infer")
     hc = HealthCheck(df)
     assert robot_health_check.df.shape == hc.df.shape
@@ -30,7 +30,7 @@ def test_save_path_dir(robot_health_check, tmp_path):
     p.resolve()
     assert p.is_file()
     assert p.parent == tmp_path
-    assert p.name == "2023-02-18-1436.pkl.xz"
+    assert p.name == "2023-02-28-1057.pkl.xz"
     p.unlink(missing_ok=False)
 
 

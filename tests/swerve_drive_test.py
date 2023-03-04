@@ -7,11 +7,11 @@ def test_df_copy_is_shallow(robot_health_check):
 
     assert hc_df.index is sd_df.index
 
-    assert hc_df.iloc[0, 3] == "DriveSubsystem"
-    assert sd_df.iloc[0, 3] == "DriveSubsystem"
+    assert hc_df["name"].iloc[0] == "DriveSubsystem"
+    assert sd_df["name"].iloc[0] == "DriveSubsystem"
 
-    expected = "RenamedSubsystem"
-    sd_df.iloc[0, 3] = expected
+    expected = "IntakeSubsystem"
+    sd_df["name"].iloc[0] = expected
 
-    assert sd_df.iloc[0, 3] == expected
-    assert hc_df.iloc[0, 3] == expected
+    assert sd_df["name"].iloc[0] == expected
+    assert hc_df["name"].iloc[0] == expected
