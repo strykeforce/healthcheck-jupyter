@@ -29,13 +29,19 @@ class HealthCheck:
         self.df.set_index(["talon_measured", "case"], inplace=True)
         self.df.sort_index(inplace=True)
 
-    def _path_name(self):
+    def _path_name(self) -> str:
         ts = self.df["datetime"].iloc[0]
         return f"{ts.strftime('%Y-%m-%d-%H%M')}.pkl.xz"
 
+    @staticmethod
+    def _history_dir() -> Path:
+        path = Path.cwd() / "history"
+        path.mkdir(exist_ok=True)
+        return path
+
     def save(self, path: str | Path | None = None, overwrite=False) -> Path:
         if path is None:
-            path = Path(self._path_name())
+            path = self._history_dir() / Path(self._path_name())
 
         if isinstance(path, str):
             path = Path(path)
@@ -52,9 +58,13 @@ class HealthCheck:
     @property
     def cases(self):
         """Get all the health check test cases."""
-        return self.df[~self.df.index.get_level_values("case").duplicated()][
-            ["name", "output", "duration"]
-        ].reset_index(level=0, drop=True)
+        return (
+            self.df[~self.df.index.get_level_values("case").duplicated()][
+                ["name", "talon_set", "type", "output", "duration"]
+            ]
+            .reset_index(level=0, drop=True)
+            .sort_index()
+        )
 
     @cache
     def subsystem_for_talon(self, talon: int) -> str:
