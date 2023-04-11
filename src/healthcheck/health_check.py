@@ -106,20 +106,22 @@ class HealthCheck:
             (speed_min - speed_pad, speed_max + speed_pad),
         )
 
-    def set_supply_current_limits(self, case: int, limits: tuple):
-        if len(limits) != 2:
-            raise Exception("limits must contain exactly two values (low, high)")
-        self.supply_limits[case] = limits
-
-    def set_stator_current_limits(self, case: int, limits: tuple):
-        if len(limits) != 2:
-            raise Exception("limits must contain exactly two values (low, high)")
-        self.stator_limits[case] = limits
-
-    def set_speed_limits(self, case: int, limits: tuple):
-        if len(limits) != 2:
-            raise Exception("limits must contain exactly two values (low, high)")
-        self.speed_limits[case] = limits
+    def set_case_limits(
+        self,
+        case: int,
+        supply_current: tuple = (None, None),
+        stator_current: tuple = (None, None),
+        speed: tuple = (None, None),
+    ):
+        if len(supply_current) != 2:
+            raise Exception("supply current limits must contain exactly two values (low, high)")
+        self.supply_limits[case] = supply_current
+        if len(stator_current) != 2:
+            raise Exception("stator current limits must contain exactly two values (low, high)")
+        self.stator_limits[case] = stator_current
+        if len(speed) != 2:
+            raise Exception("speed limits must contain exactly two values (low, high)")
+        self.speed_limits[case] = speed
 
     def plot_limit_lines(self, ax, limits):
         low = limits[0]
