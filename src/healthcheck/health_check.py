@@ -10,6 +10,8 @@ import pandas as pd
 from matplotlib import pyplot as plt
 from pandas import DataFrame
 
+Y_LIMIT_PAD_FACTOR = 0.1
+
 
 class HealthCheck:
     def __init__(self, data: dict[str, Any] | DataFrame) -> None:
@@ -23,11 +25,14 @@ class HealthCheck:
         meta["type"] = meta["type"].astype("category")
         meta["datetime"] = pd.Timestamp.now()
 
-        data = DataFrame(data["data"])
+        data = pd.concat([DataFrame(d) for d in data["data"]])
 
         self.df = pd.merge(meta, data, on="case", suffixes=("_set", "_measured"))
         self.df.set_index(["talon_measured", "case"], inplace=True)
         self.df.sort_index(inplace=True)
+        self.supply_limits: dict[int, tuple] = {}
+        self.stator_limits: dict[int, tuple] = {}
+        self.speed_limits: dict[int, tuple] = {}
 
     def _path_name(self) -> str:
         ts = self.df["datetime"].iloc[0]
@@ -86,14 +91,43 @@ class HealthCheck:
         idx = itertools.product(talons, cases)
         mask = self.df.index.isin(idx)
         df = self.df[mask]
-        supply_s = df["supply_current"]
-        stator_s = df["stator_current"]
-        speed_s = df["speed"]
+        supply_min = df["supply_current"].min()
+        supply_max = df["supply_current"].max()
+        stator_min = df["stator_current"].min()
+        stator_max = df["stator_current"].max()
+        speed_min = df["speed"].min()
+        speed_max = df["speed"].max()
+        supply_pad = abs(max(supply_min, supply_max, key=abs) * Y_LIMIT_PAD_FACTOR)
+        stator_pad = abs(max(stator_min, stator_max, key=abs) * Y_LIMIT_PAD_FACTOR)
+        speed_pad = abs(max(speed_min, speed_max, key=abs) * Y_LIMIT_PAD_FACTOR)
         return (
-            (supply_s.min(), supply_s.max()),
-            (stator_s.min(), stator_s.max()),
-            (speed_s.min(), speed_s.max()),
+            (supply_min - supply_pad, supply_max + supply_pad),
+            (stator_min - stator_pad, stator_max + stator_pad),
+            (speed_min - speed_pad, speed_max + speed_pad),
         )
+
+    def set_supply_current_limits(self, case: int, limits: tuple):
+        if len(limits) != 2:
+            raise Exception("limits must contain exactly two values (low, high)")
+        self.supply_limits[case] = limits
+
+    def set_stator_current_limits(self, case: int, limits: tuple):
+        if len(limits) != 2:
+            raise Exception("limits must contain exactly two values (low, high)")
+        self.stator_limits[case] = limits
+
+    def set_speed_limits(self, case: int, limits: tuple):
+        if len(limits) != 2:
+            raise Exception("limits must contain exactly two values (low, high)")
+        self.speed_limits[case] = limits
+
+    def plot_limit_lines(self, ax, limits):
+        low = limits[0]
+        high = limits[1]
+        if low is not None:
+            ax.axhline(low, color="r", linestyle="dotted")
+        if high is not None:
+            ax.axhline(high, color="r", linestyle="dotted")
 
     def plot_talons(
         self,
@@ -138,7 +172,7 @@ class HealthCheck:
                     axs[row][col].set(
                         ylabel="volts",
                         ylim=(-13, 13),
-                        title=f"voltage at {output:0.0f}%",
+                        title=f"{case}: voltage at {output:0.0f}%",
                     )
                     axs[row][col].grid(visible=True, alpha=0.25)
                     col += 1
@@ -147,9 +181,13 @@ class HealthCheck:
                 axs[row][col].set(
                     ylabel="amps",
                     ylim=supply_ylim,
-                    title=f"supply current at {output:0.0f}%",
+                    title=f"{case}: supply current at {output:0.0f}%",
                 )
                 axs[row][col].grid(visible=True, alpha=0.25)
+
+                if case in self.supply_limits:
+                    self.plot_limit_lines(axs[row][col], self.supply_limits[case])
+
                 col += 1
 
                 if stator_current:
@@ -157,18 +195,26 @@ class HealthCheck:
                     axs[row][col].set(
                         ylabel="amps",
                         ylim=stator_ylim,
-                        title=f"stator current at {output:0.0f}%",
+                        title=f"{case}: stator current at {output:0.0f}%",
                     )
                     axs[row][col].grid(visible=True, alpha=0.25)
+
+                    if case in self.stator_limits:
+                        self.plot_limit_lines(axs[row][col], self.stator_limits[case])
+
                     col += 1
 
                 axs[row][col].plot(ts, self.df.loc[(t, case), "speed"])
                 axs[row][col].set(
                     ylabel="ticks/100ms",
                     ylim=speed_ylim,
-                    title=f"speed at {output:0.0f}%",
+                    title=f"{case}: speed at {output:0.0f}%",
                 )
                 axs[row][col].grid(visible=True, alpha=0.25)
+
+                if case in self.speed_limits:
+                    self.plot_limit_lines(axs[row][col], self.speed_limits[case])
+
         axs[0][0].legend(talons)
         fig.suptitle(title)
         # fig.show()
