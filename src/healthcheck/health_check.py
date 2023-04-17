@@ -127,9 +127,9 @@ class HealthCheck:
         low = limits[0]
         high = limits[1]
         if low is not None:
-            ax.axhline(low, color="r", linestyle="dotted")
+            ax.axhline(low, color="b", linestyle="dotted", label="_low")
         if high is not None:
-            ax.axhline(high, color="r", linestyle="dotted")
+            ax.axhline(high, color="r", linestyle="dotted", label="_high")
 
     def plot_talons(
         self,
@@ -170,7 +170,7 @@ class HealthCheck:
             for t in talons:
                 col = 0
                 if voltage:
-                    axs[row][col].plot(ts, self.df.loc[(t, case), "voltage"])
+                    axs[row][col].plot(ts, self.df.loc[(t, case), "voltage"], label=t)
                     axs[row][col].set(
                         ylabel="volts",
                         ylim=(-13, 13),
@@ -179,7 +179,7 @@ class HealthCheck:
                     axs[row][col].grid(visible=True, alpha=0.25)
                     col += 1
 
-                axs[row][col].plot(ts, self.df.loc[(t, case), "supply_current"])
+                axs[row][col].plot(ts, self.df.loc[(t, case), "supply_current"], label=t)
                 axs[row][col].set(
                     ylabel="amps",
                     ylim=supply_ylim,
@@ -193,7 +193,7 @@ class HealthCheck:
                 col += 1
 
                 if stator_current:
-                    axs[row][col].plot(ts, self.df.loc[(t, case), "stator_current"])
+                    axs[row][col].plot(ts, self.df.loc[(t, case), "stator_current"], label=t)
                     axs[row][col].set(
                         ylabel="amps",
                         ylim=stator_ylim,
@@ -206,7 +206,7 @@ class HealthCheck:
 
                     col += 1
 
-                axs[row][col].plot(ts, self.df.loc[(t, case), "speed"])
+                axs[row][col].plot(ts, self.df.loc[(t, case), "speed"], label=t)
                 axs[row][col].set(
                     ylabel="ticks/100ms",
                     ylim=speed_ylim,
@@ -217,9 +217,8 @@ class HealthCheck:
                 if case in self.speed_limits:
                     self.plot_limit_lines(axs[row][col], self.speed_limits[case])
 
-        axs[0][0].legend(talons)
+        axs[0][0].legend()
         fig.suptitle(title)
-        # fig.show()
 
 
 class SwerveDriveHealthCheck(HealthCheck):
