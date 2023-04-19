@@ -15,6 +15,10 @@ Y_LIMIT_PAD_FACTOR = 0.1
 
 class HealthCheck:
     def __init__(self, data: dict[str, Any] | DataFrame) -> None:
+        self.supply_limits: dict[int, tuple] = {}
+        self.stator_limits: dict[int, tuple] = {}
+        self.speed_limits: dict[int, tuple] = {}
+
         if isinstance(data, DataFrame):
             self.df = data
             return
@@ -30,9 +34,6 @@ class HealthCheck:
         self.df = pd.merge(meta, data, on="case", suffixes=("_set", "_measured"))
         self.df.set_index(["talon_measured", "case"], inplace=True)
         self.df.sort_index(inplace=True)
-        self.supply_limits: dict[int, tuple] = {}
-        self.stator_limits: dict[int, tuple] = {}
-        self.speed_limits: dict[int, tuple] = {}
 
     def _path_name(self) -> str:
         ts = self.df["datetime"].iloc[0]
