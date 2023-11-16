@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import itertools
 import sys
+import loaders
 from functools import cache
 from pathlib import Path
 from typing import Any
@@ -304,6 +305,93 @@ class HealthCheck:
         # fig.show()
 
 
+
+def plot_talons_history(
+        self, supply_ylim, stator_ylim, speed_ylim, SupplyLineY, StatorLineY, SpeedLineY,
+        cases: list[int],
+        talons: list[int], files: list[str],
+        title: str | None = None,
+        voltage=False,
+        stator_current=True
+    ) -> None:
+        """Plots talon health check measurements for specified cases."""
+        
+        num_cases = len(cases) * len(files)
+        hcs = []
+        hcs.append(self)
+        for i in files:
+            hcs.append(loaders.load_healthcheck(i))
+
+        if num_cases == 0 or len(talons) == 0:
+            raise RuntimeError("cases and talons must each contain at least one value")
+
+        if title is None:
+            title = f"{self.df.loc[(talons[0], cases[0]), 'name'].iloc[0]} Talons"
+
+        num_measures = 2
+        if voltage:
+            num_measures += 1
+        if stator_current:
+            num_measures += 1
+
+        fig, axs = plt.subplots(
+            num_cases,
+            num_measures,
+            squeeze=False,
+            layout="constrained",
+            sharex="all",
+            figsize=(12, num_cases * 4),
+        )
+
+        for idx, hc in enumerate(hcs):
+            for row, case in enumerate(cases):
+                ts = hc.df.loc[(talons[0], case), "msec_elapsed"]
+                output = hc.df.loc[(talons[0], case), "output"].iloc[0] * 100
+                for t in talons:
+                    col = 0
+                    if voltage:
+                        axs[row][col].plot(ts, hc.df.loc[(t, case), "voltage"], alpha = (1-.75(idx)))
+                        axs[row][col].set(
+                            ylabel="volts",
+                            ylim=(-13, 13),
+                            title=f"voltage at {output:0.0f}%",
+                        )
+                        axs[row][col].grid(visible=True, alpha=0.25)
+                        col += 1
+
+                    axs[row][col].plot(ts, hc.df.loc[(t, case), "supply_current"], alpha = (1-.75(idx)))
+                    axs[row][col].axhline(y = SupplyLineY)
+                    axs[row][col].set(
+                        ylabel="amps",
+                        ylim=supply_ylim,
+                        title=f"supply current at {output:0.0f}%",
+                    )
+                    axs[row][col].grid(visible=True, alpha=0.25)
+                    col += 1
+
+                    if stator_current:
+                        axs[row][col].plot(ts, hc.df.loc[(t, case), "stator_current"], alpha = (1-.75(idx)))
+                        axs[row][col].axhline(y = StatorLineY)
+                        axs[row][col].set(
+                            ylabel="amps",
+                            ylim=stator_ylim,
+                            title=f"stator current at {output:0.0f}%",
+                        )
+                        axs[row][col].grid(visible=True, alpha=0.25)
+                        col += 1
+
+                    axs[row][col].plot(ts, hc.df.loc[(t, case), "speed"], alpha = (1-.75(idx)))
+                    axs[row][col].axhline(y = SpeedLineY)
+                    axs[row][col].set(
+                        ylabel="ticks/100ms",
+                        ylim=speed_ylim,
+                        title=f"speed at {output:0.0f}%",
+                    )
+                    axs[row][col].grid(visible=True, alpha=0.25)
+
+        axs[0][0].legend(talons)
+        fig.suptitle(title)
+        # fig.show()
 
 
 class SwerveDriveHealthCheck(HealthCheck):
