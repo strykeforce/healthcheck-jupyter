@@ -319,7 +319,10 @@ class HealthCheck:
         hcs = []
         hcs.append(self)
         for i in files:
-            hcs.append(RobotHealthCheck(pd.read_pickle(i, compression="infer")))
+            hc = RobotHealthCheck(pd.read_pickle(i, compression="infer"))
+            hc.cases
+            hcs.append(hc)
+            
 
         if num_cases == 0 or len(talons) == 0:
             raise RuntimeError("cases and talons must each contain at least one value")
