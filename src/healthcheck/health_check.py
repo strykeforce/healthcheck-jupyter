@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import itertools
 import sys
-import loaders
 from functools import cache
 from pathlib import Path
 from typing import Any
@@ -320,7 +319,7 @@ def plot_talons_history(
         hcs = []
         hcs.append(self)
         for i in files:
-            hcs.append(loaders.load_healthcheck(i))
+            hcs.append(RobotHealthCheck(pd.read_pickle(i, compression="infer")))
 
         if num_cases == 0 or len(talons) == 0:
             raise RuntimeError("cases and talons must each contain at least one value")
