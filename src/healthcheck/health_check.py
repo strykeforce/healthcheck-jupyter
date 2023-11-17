@@ -315,8 +315,9 @@ class HealthCheck:
     ) -> None:
         """Plots talon health check measurements for specified cases."""
         
-        num_cases = len(cases) * len(files)
+        num_cases = len(cases)
         hcs = []
+        styles = ["-", "--", ":"]
         hcs.append(self)
         for i in files:
             hc = RobotHealthCheck(pd.read_pickle(i, compression="infer"))
@@ -351,7 +352,7 @@ class HealthCheck:
                 for t in talons:
                     col = 0
                     if voltage:
-                        axs[row][col].plot(ts, hc.df.loc[(t, case), "voltage"], alpha = (1/(1+idx)))
+                        axs[row][col].plot(ts, hc.df.loc[(t, case), "voltage"], styles[idx % 3])
                         axs[row][col].set(
                             ylabel="volts",
                             ylim=(-13, 13),
@@ -360,7 +361,7 @@ class HealthCheck:
                         axs[row][col].grid(visible=True, alpha=0.25)
                         col += 1
 
-                    axs[row][col].plot(ts, hc.df.loc[(t, case), "supply_current"], alpha = (1/(1+idx)))
+                    axs[row][col].plot(ts, hc.df.loc[(t, case), "supply_current"], styles[idx % 3])
                     axs[row][col].axhline(y = SupplyLineY)
                     axs[row][col].set(
                         ylabel="amps",
@@ -371,7 +372,7 @@ class HealthCheck:
                     col += 1
 
                     if stator_current:
-                        axs[row][col].plot(ts, hc.df.loc[(t, case), "stator_current"], alpha = (1/(1+idx)))
+                        axs[row][col].plot(ts, hc.df.loc[(t, case), "stator_current"], styles[idx % 3])
                         axs[row][col].axhline(y = StatorLineY)
                         axs[row][col].set(
                             ylabel="amps",
@@ -381,7 +382,7 @@ class HealthCheck:
                         axs[row][col].grid(visible=True, alpha=0.25)
                         col += 1
 
-                    axs[row][col].plot(ts, hc.df.loc[(t, case), "speed"], alpha = (1/(1+idx)))
+                    axs[row][col].plot(ts, hc.df.loc[(t, case), "speed"], styles[idx % 3])
                     axs[row][col].axhline(y = SpeedLineY)
                     axs[row][col].set(
                         ylabel="ticks/100ms",
