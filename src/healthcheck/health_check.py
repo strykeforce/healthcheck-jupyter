@@ -320,7 +320,7 @@ class HealthCheck:
         hcs.append(self)
         for i in files:
             hc = RobotHealthCheck(pd.read_pickle(i, compression="infer"))
-            hc.cases
+            print(hc.cases)
             hcs.append(hc)
             
 
