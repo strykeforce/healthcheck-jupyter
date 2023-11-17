@@ -305,7 +305,7 @@ class HealthCheck:
 
 
 
-def plot_talons_history(
+    def plot_talons_history(
         self, supply_ylim, stator_ylim, speed_ylim, SupplyLineY, StatorLineY, SpeedLineY,
         cases: list[int],
         talons: list[int], files: list[str],
