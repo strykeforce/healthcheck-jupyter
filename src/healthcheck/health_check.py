@@ -44,6 +44,10 @@ class HealthCheck:
         path = Path.cwd() / "history"
         path.mkdir(exist_ok=True)
         return path
+    
+    def find_last_check():
+        for (dirpath, dirnames, filenames) in os.walk(self._history_dir(),False):
+            return filenames[0]
 
     def save(self, path: str | Path | None = None, overwrite=False) -> Path:
         if path is None:
@@ -134,6 +138,7 @@ class HealthCheck:
 
     def plot_talons(
         self,
+        last_hc,
         cases: list[int],
         talons: list[int],
         title: str | None = None,
@@ -213,6 +218,21 @@ class HealthCheck:
                     ylim=speed_ylim,
                     title=f"{case}: speed at {output:0.0f}%",
                 )
+                if stator_current:
+                    axs[row][col].plot(ts, last_hc.df.loc[(t, case), "stator_current"], alpha=0.5)
+                    axs[row][col].set(
+                        ylabel="Historical amps",
+                        ylim=stator_ylim)
+                    axs[row][col].grid(visible=True, alpha=0.25)
+
+                    if case in self.stator_limits:
+                        self.plot_limit_lines(axs[row][col], self.stator_limits[case])
+
+                    col += 1
+
+                axs[row][col].plot(ts, last_hc.df.loc[(t, case), "speed"], alpha = 0.5)
+                axs[row][col].set(
+                    ylim=speed_ylim)
                 axs[row][col].grid(visible=True, alpha=0.25)
 
                 if case in self.speed_limits:
